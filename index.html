@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>INAFIS - Login Dummy</title>
+  <style>
+    :root{ --bg:#f3f6fb; --card:#fff; --primary:#0b5ed7; --muted:#6b7280 }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:linear-gradient(180deg, #eef5ff 0%, var(--bg) 100%); color:#111}
+    .wrap{min-height:100vh; display:grid; place-items:center; padding:32px}
+    .card{width:100%; max-width:920px; background:var(--card); box-shadow:0 8px 30px rgba(15,23,42,0.08); border-radius:12px; display:grid; grid-template-columns: 420px 1fr; overflow:hidden}
+
+    /* Left - Login */
+    .left{padding:36px 32px; background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%)}
+
+    /* Logo */
+    .logo{display:flex; align-items:center; gap:16px}
+    .logo img{width:200px; height:auto; object-fit:contain; border-radius:10px; background:#fff; border:1px solid #eef2f7}
+    .logo .brand{font-weight:800; font-size:22px; letter-spacing:0.6px; margin-top:8px}
+    .logo .longname{font-size:12px; color:var(--muted); margin-top:6px; max-width:220px; line-height:1.15}
+
+    h2{margin-top:18px; margin-bottom:6px; font-size:20px}
+    p.lead{margin:0 0 18px 0; color:var(--muted)}
+
+    form{margin-top:8px}
+    label{display:block; font-size:13px; margin:12px 0 6px}
+    input[type=text], input[type=password]{width:100%; padding:12px 14px; border-radius:8px; border:1px solid #e6eef8; background:#fbfdff}
+    .btn{margin-top:16px; width:100%; padding:12px; border-radius:10px; border:0; cursor:pointer; font-weight:600}
+    .btn.primary{background:var(--primary); color:white}
+    .btn.ghost{background:transparent; color:var(--primary); border:1px solid rgba(11,94,215,0.12)}
+    .error{color:#c92a2a; font-size:13px; margin-top:8px}
+
+    /* Right - Dashboard */
+    .right{padding:28px 32px}
+    .topbar{display:flex; justify-content:space-between; align-items:center}
+    .user{font-weight:600}
+    table{width:100%; border-collapse:collapse; margin-top:14px}
+    th, td{padding:10px 12px; text-align:left; border-bottom:1px solid #eef2f7}
+    .center-note{padding:24px; text-align:center; color:var(--muted)}
+
+    /* Responsif */
+    @media (max-width:880px){
+      .card{grid-template-columns:1fr;}
+      .left{order:2}
+      .right{order:1}
+      .logo img{width:160px}
+      .logo .brand{font-size:18px; margin-top:6px}
+      .logo .longname{font-size:11px; max-width:160px; margin-top:4px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="main">
+      <section class="left" aria-labelledby="login-title">
+        <div class="logo">
+          <img id="logoImg" src="inafis-logo.png" alt="Logo Inafis" onerror="this.style.display='none'">
+          <div>
+            <div class="brand">INAFIS</div>
+            <div class="longname">Indonesia Automatic Fingerprint Identification System</div>
+          </div>
+        </div>
+
+        <h2 id="login-title">Masuk ke Sistem</h2>
+        <p class="lead">Masukkan username & password. Dummy data untuk simulasi tugas.</p>
+
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+          <label for="username">Username</label>
+          <input id="username" type="text" autocomplete="username" required>
+
+          <label for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password" required>
+
+          <button class="btn primary" type="submit">Login</button>
+          <div id="error" class="error" role="alert" aria-live="polite" style="display:none"></div>
+        </form>
+
+        <div style="margin-top:18px; font-size:13px; color:var(--muted)">
+          <strong>Catatan:</strong> kredensial dummy saja.
+        </div>
+      </section>
+
+      <section class="right" id="rightPane" style="display:none">
+        <div class="topbar">
+          <div>
+            <div style="font-size:14px; color:var(--muted)">Selamat datang di</div>
+            <div class="user">INAFIS</div>
+          </div>
+          <div>
+            <button class="btn ghost" onclick="doLogout()">Logout</button>
+          </div>
+        </div>
+
+        <div id="dashboardArea">
+          <div class="center-note">Memuat data...</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const DUMMY_USER = 'inafis';
+    const DUMMY_PASS = 'inafis123';
+
+    const DUMMY_DATA = [
+      { id: 'INA-0001', nama: 'Ujang Kedu', jenis_kelamin: 'L', umur: 35, status: 'Teregister' },
+      { id: 'INA-0002', nama: 'Panggang Patin', jenis_kelamin: 'P', umur: 28, status: 'Ditinjau' },
+      { id: 'INA-0003', nama: 'Tumis Kangkung', jenis_kelamin: 'L', umur: 42, status: 'Selesai' }
+    ];
+
+    function $(id){return document.getElementById(id)}
+
+    function handleLogin(e){
+      e.preventDefault();
+      const u = $('username').value.trim();
+      const p = $('password').value;
+      const err = $('error');
+
+      if(u === DUMMY_USER && p === DUMMY_PASS){
+        err.style.display = 'none';
+        showDashboard();
+      } else {
+        err.style.display = 'block';
+        err.textContent = 'Username atau password salah. Coba: inafis / inafis123';
+      }
+      return false;
+    }
+
+    function showDashboard(){
+      document.querySelector('.left').style.display = 'none';
+      const right = $('rightPane');
+      right.style.display = 'block';
+
+      const area = $('dashboardArea');
+      let html = '<h3>Data Dummy Inafis</h3>';
+      html += '<p style="color:var(--muted); margin-top:6px">Menampilkan sampel data dummy.</p>';
+      html += '<table aria-label="Tabel data inafis"><thead><tr><th>No</th><th>ID</th><th>Nama</th><th>Jenis Kelamin</th><th>Umur</th><th>Status</th></tr></thead><tbody>';
+      DUMMY_DATA.forEach((r,i)=>{
+        html += `<tr><td>${i+1}</td><td>${r.id}</td><td>${r.nama}</td><td>${r.jenis_kelamin}</td><td>${r.umur}</td><td>${r.status}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      html += '<div style="margin-top:14px"><button class="btn" onclick="downloadCSV()">Download CSV (dummy)</button></div>';
+      area.innerHTML = html;
+    }
+
+    function doLogout(){ location.reload(); }
+
+    function downloadCSV(){
+      const rows=[['No','ID','Nama','Jenis Kelamin','Umur','Status']];
+      DUMMY_DATA.forEach((r,i)=>rows.push([i+1,r.id,r.nama,r.jenis_kelamin,r.umur,r.status]));
+      const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='inafis_dummy_data.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
